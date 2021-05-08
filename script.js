@@ -58,6 +58,12 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+const calcDisplayMovements = function (movements) {
+  const balance = movements.reduce((acc, move) => acc + move, 0);
+  labelBalance.textContent = `${balance} EUR`;
+}
+calcDisplayMovements(account1.movements);
+
 const displayMovements = function (movements) {
   containerMovements.innerHTML = '';
   movements.forEach((move, i) => {
