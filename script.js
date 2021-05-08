@@ -1,7 +1,4 @@
 'use strict';
-
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
 // BANKIST APP
 
 // Data
@@ -61,8 +58,36 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
+const displayMovements = function (movements) {
+  containerMovements.innerHTML = '';
+  movements.forEach((move, i) => {
+    const type = move > 0 ? 'deposit' : 'withdrawal';
+
+    const html = `
+    <div class="movements__row">
+      <div class="movements__type movements__type--${type}">${i + 1}. ${type}</div>
+      <div class="movements__date">3 days ago</div>
+      <div class="movements__value">${move}</div>
+    </div>
+    `;
+    containerMovements.insertAdjacentHTML('afterbegin', html);
+  });
+}
+displayMovements(account1.movements);
+
+
+const creatUserNames = function (accs) {
+  accs.forEach(acc =>
+    acc.userName = acc.owner.toLowerCase().split(' ').map(n => n[0]).join('')
+  )
+}
+
+creatUserNames(accounts);
+console.log(accounts);
+
+// const movementsDescriptions = movements.map((move, i) =>
+//   `Movement ${i + 1}: You ${move > 0 ? 'deposited' : 'withdrew'} ${Math.abs(move)}`
+// );
 // LECTURES
 
 const currencies = new Map([
@@ -72,5 +97,3 @@ const currencies = new Map([
 ]);
 
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
-
-/////////////////////////////////////////////////
