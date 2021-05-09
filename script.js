@@ -147,8 +147,23 @@ btnTransfer.addEventListener('click', function (e) {
   }
 
   inputTransferAmount.value = inputTransferTo.value = '';
-
 });
+
+btnClose.addEventListener('click', (e) => {
+  e.preventDefault();
+
+  if (currentAccount.userName === inputCloseUsername.value && currentAccount.pin === Number(inputClosePin.value)) {
+    const index = accounts.findIndex(acc => acc.userName === currentAccount.userName);
+
+    // delete account
+    accounts.splice(index, 1);
+
+    containerApp.style.opacity = 0;
+  }
+
+  inputCloseUsername.value = inputClosePin.value = '';
+});
+
 // LECTURES
 const currencies = new Map([
   ['USD', 'United States dollar'],
