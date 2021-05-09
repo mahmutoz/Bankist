@@ -58,9 +58,9 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const calcDisplayBalance = function (movements) {
-  const balance = movements.reduce((acc, move) => acc + move, 0);
-  labelBalance.textContent = `${balance} EUR`;
+const calcDisplayBalance = function (acc) {
+  acc.balance = acc.movements.reduce((acc, move) => acc + move, 0);
+  labelBalance.textContent = `${acc.balance} EUR`;
 }
 
 const displayMovements = function (acc) {
@@ -98,6 +98,17 @@ const creatUserNames = function (accs) {
 }
 creatUserNames(accounts);
 
+const updateUI = ((acc) => {
+  // Display balance
+  calcDisplayBalance(acc);
+
+  // Display Movements
+  displayMovements(acc);
+
+  // Display Summary
+  calcDispalySummary(acc);
+});
+
 let currentAccount;
 btnLogin.addEventListener('click', function (e) {
   e.preventDefault();
@@ -112,22 +123,33 @@ btnLogin.addEventListener('click', function (e) {
 
     inputLoginPin.blur();
 
-    // Display balance
-    calcDisplayBalance(currentAccount.movements);
-
-    // Display Movements
-    displayMovements(currentAccount);
-
-    // Display Summary
-    calcDispalySummary(currentAccount);
+    updateUI(currentAccount);
 
   } else {
     alert('Wrong username or password!');
   }
 });
 
-// LECTURES
 
+btnTransfer.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  const amount = Number(inputTransferAmount.value);
+  const receiverAcc = accounts.find(acc => acc.userName === inputTransferTo.value);
+  console.log(amount, receiverAcc);
+
+  if (amount > 0 && receiverAcc && currentAccount.balance >= amount && receiverAcc.userName !== currentAccount.userName) {
+    currentAccount.movements.push(-amount);
+    receiverAcc.movements.push(amount);
+
+    // update UI
+    updateUI(currentAccount);
+  }
+
+  inputTransferAmount.value = inputTransferTo.value = '';
+
+});
+// LECTURES
 const currencies = new Map([
   ['USD', 'United States dollar'],
   ['EUR', 'Euro'],
