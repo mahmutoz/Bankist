@@ -63,9 +63,13 @@ const calcDisplayBalance = function (acc) {
   labelBalance.textContent = `${acc.balance} EUR`;
 }
 
-const displayMovements = function (acc) {
+const displayMovements = function (acc, sort = false) {
+
   containerMovements.innerHTML = '';
-  acc.movements.forEach((move, i) => {
+
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+
+  movs.forEach((move, i) => {
     const type = move > 0 ? 'deposit' : 'withdrawal';
 
     const html = `
@@ -130,7 +134,6 @@ btnLogin.addEventListener('click', function (e) {
   }
 });
 
-
 btnTransfer.addEventListener('click', function (e) {
   e.preventDefault();
 
@@ -163,6 +166,15 @@ btnLoan.addEventListener('click', (e) => {
     updateUI(currentAccount);
     inputLoanAmount.value = '';
   }
+});
+
+// * Sort Movements
+let sorted = false;
+
+btnSort.addEventListener('click', (e) => {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
 });
 
 btnClose.addEventListener('click', (e) => {
