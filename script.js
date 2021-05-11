@@ -4,7 +4,7 @@
 // Data
 const account1 = {
   owner: 'John Doe',
-  movements: [600, 250, -100, 3500, -855, -430, 70, 1350, 825],
+  movements: [600, 250, -100, 3500, -855, -430, 70, 1350, 825, -320],
   interestRate: 1.2, // %
   pin: 1111,
 };
