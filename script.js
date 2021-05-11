@@ -60,14 +60,14 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, move) => acc + move, 0);
-  labelBalance.textContent = `${acc.balance} EUR`;
+  labelBalance.textContent = `${acc.balance} €`;
 }
 
-const displayMovements = function (acc, sort = false) {
+const displayMovements = function (mov, sort = false) {
 
   containerMovements.innerHTML = '';
 
-  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+  const movs = sort ? mov.slice() && mov.slice().sort((a, b) => a - b) : mov;
 
   movs.forEach((move, i) => {
     const type = move > 0 ? 'deposit' : 'withdrawal';
@@ -107,7 +107,7 @@ const updateUI = ((acc) => {
   calcDisplayBalance(acc);
 
   // Display Movements
-  displayMovements(acc);
+  displayMovements(acc.movements);
 
   // Display Summary
   calcDispalySummary(acc);
