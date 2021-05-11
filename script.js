@@ -3,34 +3,27 @@
 
 // Data
 const account1 = {
-  owner: 'Jonas Schmedtmann',
-  movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
+  owner: 'John Doe',
+  movements: [600, 250, -100, 3500, -855, -430, 70, 1350, 825],
   interestRate: 1.2, // %
   pin: 1111,
 };
 
 const account2 = {
-  owner: 'Jessica Davis',
-  movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
+  owner: 'Orson Carte Pott',
+  movements: [7000, 3400, -2450, -790, -3210, -1000, 8500, -30, 650, -2230],
   interestRate: 1.5,
   pin: 2222,
 };
 
 const account3 = {
-  owner: 'Steven Thomas Williams',
-  movements: [200, -200, 340, -300, -20, 50, 400, -460],
-  interestRate: 0.7,
+  owner: 'Sarah Peace',
+  movements: [430, 1000, 700, 50, 90, 1500],
+  interestRate: 1.1,
   pin: 3333,
 };
 
-const account4 = {
-  owner: 'Sarah Smith',
-  movements: [430, 1000, 700, 50, 90],
-  interestRate: 1,
-  pin: 4444,
-};
-
-const accounts = [account1, account2, account3, account4];
+const accounts = [account1, account2, account3];
 
 // Elements
 const labelWelcome = document.querySelector('.welcome');
@@ -86,13 +79,13 @@ const displayMovements = function (mov, sort = false) {
 const calcDispalySummary = function (acc) {
 
   const outComes = acc.movements.filter(move => move < 0).reduce((acc, move) => acc + move, 0);
-  labelSumOut.textContent = `${Math.abs(outComes)}€`;
+  labelSumOut.textContent = `${Math.abs((outComes).toFixed(2))}€`;
 
   const inComes = acc.movements.filter(move => move > 0).reduce((acc, move) => acc + move, 0);
-  labelSumIn.textContent = `${inComes}€`;
+  labelSumIn.textContent = `${(inComes.toFixed(2))}€`;
 
   const interest = acc.movements.filter(move => move > 0).map(deposit => (deposit * acc.interestRate) / 100).filter((int, i, arr) => int >= 1).reduce((acc, move) => acc + move, 0);
-  labelSumInterest.textContent = `${interest}€`;
+  labelSumInterest.textContent = `${(interest).toFixed(2)}€`;
 }
 
 const creatUserNames = function (accs) {
