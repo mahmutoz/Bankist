@@ -7,6 +7,20 @@ const account1 = {
   movements: [600, 250, -100, 3500, -855, -430, 70, 1350, 825, -320],
   interestRate: 1.2, // %
   pin: 1111,
+  movementsDates: [
+    '2019-11-18T21:31:17.178Z',
+    '2019-12-23T07:42:02.383Z',
+    '2019-12-23T07:42:02.383Z',
+    '2020-02-28T09:15:04.904Z',
+    '2020-03-28T09:15:04.904Z',
+    '2020-04-01T10:17:24.185Z',
+    '2020-05-08T14:11:59.604Z',
+    '2020-05-27T17:01:17.194Z',
+    '2020-07-11T23:36:17.929Z',
+    '2020-07-12T10:51:36.790Z',
+  ],
+  currency: 'EUR',
+  locale: 'pt-PT', // de-DE
 };
 
 const account2 = {
@@ -14,6 +28,20 @@ const account2 = {
   movements: [7000, 3400, -2450, -790, -3210, -1000, 8500, -30, 650, -2230],
   interestRate: 1.5,
   pin: 2222,
+  movementsDates: [
+    '2019-11-01T13:15:33.035Z',
+    '2019-11-30T09:48:16.867Z',
+    '2019-12-25T06:04:23.907Z',
+    '2020-01-25T14:18:46.235Z',
+    '2020-02-05T16:33:06.386Z',
+    '2020-04-10T14:43:26.374Z',
+    '2020-05-25T18:49:59.371Z',
+    '2020-06-25T18:49:59.371Z',
+    '2020-07-26T12:01:20.894Z',
+    '2020-08-26T12:01:20.894Z',
+  ],
+  currency: 'USD',
+  locale: 'en-US',
 };
 
 const account3 = {
@@ -21,6 +49,16 @@ const account3 = {
   movements: [430, 1000, 700, 50, 90, 1500],
   interestRate: 1.1,
   pin: 3333,
+  movementsDates: [
+    '2019-08-01T13:15:33.035Z',
+    '2019-10-30T09:48:16.867Z',
+    '2019-12-25T06:04:23.907Z',
+    '2020-02-22T14:18:46.235Z',
+    '2020-02-25T16:33:06.386Z',
+    '2020-03-10T14:43:26.374Z',
+  ],
+  currency: 'USD',
+  locale: 'en-US',
 };
 
 const accounts = [account1, account2, account3];
@@ -56,19 +94,21 @@ const calcDisplayBalance = function (acc) {
   labelBalance.textContent = `${acc.balance} €`;
 }
 
-const displayMovements = function (mov, sort = false) {
-
+const displayMovements = function (acc, sort = false) {
   containerMovements.innerHTML = '';
-
-  const movs = sort ? mov.slice() && mov.slice().sort((a, b) => a - b) : mov;
+  const movs = sort ? acc.movements.slice() && acc.movements.slice().sort((a, b) => a - b) : acc.movements;
 
   movs.forEach((move, i) => {
     const type = move > 0 ? 'deposit' : 'withdrawal';
-
+    const now = new Date(acc.movementsDates[i]);
+    const day = `${now.getDate()}`.padStart(2, 0);
+    const month = `${now.getMonth()}`.padStart(2, 0);
+    const year = now.getFullYear();
+    const displayDate = `${day}/${month}/${year}`;
     const html = `
     <div class="movements__row">
       <div class="movements__type movements__type--${type}">${i + 1}. ${type}</div>
-      <div class="movements__date">3 days ago</div>
+      <div class="movements__date">${displayDate}</div>
       <div class="movements__value">${move}€</div>
     </div>
     `;
@@ -96,11 +136,11 @@ const creatUserNames = function (accs) {
 creatUserNames(accounts);
 
 const updateUI = ((acc) => {
+  // Display Movements
+  displayMovements(acc);
+
   // Display balance
   calcDisplayBalance(acc);
-
-  // Display Movements
-  displayMovements(acc.movements);
 
   // Display Summary
   calcDispalySummary(acc);
@@ -109,12 +149,18 @@ const updateUI = ((acc) => {
 let currentAccount;
 btnLogin.addEventListener('click', function (e) {
   e.preventDefault();
-
   currentAccount = accounts.find(user => user.userName === inputLoginUsername.value);
 
   if (currentAccount && currentAccount.pin === Number(inputLoginPin.value)) {
     labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ')[0]}`;
     containerApp.style.opacity = 1;
+    const now = new Date();
+    const day = `${now.getDate()}`.padStart(2, 0);
+    const month = `${now.getMonth()}`.padStart(2, 0);
+    const year = now.getFullYear();
+    const min = `${now.getMinutes()}`.padStart(2, 0);
+    const hour = `${now.getHours()}`.padStart(2, 0);
+    labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
 
     inputLoginUsername.value = inputLoginPin.value = '';
 
@@ -138,6 +184,10 @@ btnTransfer.addEventListener('click', function (e) {
     currentAccount.movements.push(-amount);
     receiverAcc.movements.push(amount);
 
+    // Add transfer date
+    currentAccount.movementsDates.push(new Date().toISOString());
+    receiverAcc.movementsDates.push(new Date().toISOString());
+
     // update UI
     updateUI(currentAccount);
   }
@@ -156,6 +206,9 @@ btnLoan.addEventListener('click', (e) => {
     // Add amount
     currentAccount.movements.push(amount);
 
+    // Add loan date
+    currentAccount.movementsDates.push(new Date().toISOString());
+
     updateUI(currentAccount);
     inputLoanAmount.value = '';
   }
@@ -166,7 +219,7 @@ let sorted = false;
 
 btnSort.addEventListener('click', (e) => {
   e.preventDefault();
-  displayMovements(currentAccount.movements, !sorted);
+  displayMovements(currentAccount, !sorted);
   sorted = !sorted;
 });
 
