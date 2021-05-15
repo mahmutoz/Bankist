@@ -94,17 +94,32 @@ const calcDisplayBalance = function (acc) {
   labelBalance.textContent = `${acc.balance} €`;
 }
 
+// Date Format
+const formatMovementDate = function (date) {
+  const calcDaysPassed = (date1, date2) => Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
+  const daysPassed = calcDaysPassed(new Date(), date);
+
+  if (daysPassed === 0) return 'Today';
+  if (daysPassed === 1) return 'Yesterday';
+  if (daysPassed <= 7) return `${daysPassed} days ago`;
+  else {
+    const day = `${date.getDate()}`.padStart(2, 0);
+    const month = `${date.getMonth()}`.padStart(2, 0);
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+}
+
 const displayMovements = function (acc, sort = false) {
   containerMovements.innerHTML = '';
   const movs = sort ? acc.movements.slice() && acc.movements.slice().sort((a, b) => a - b) : acc.movements;
 
   movs.forEach((move, i) => {
     const type = move > 0 ? 'deposit' : 'withdrawal';
-    const now = new Date(acc.movementsDates[i]);
-    const day = `${now.getDate()}`.padStart(2, 0);
-    const month = `${now.getMonth()}`.padStart(2, 0);
-    const year = now.getFullYear();
-    const displayDate = `${day}/${month}/${year}`;
+
+    const date = new Date(acc.movementsDates[i]);
+    const displayDate = formatMovementDate(date);
     const html = `
     <div class="movements__row">
       <div class="movements__type movements__type--${type}">${i + 1}. ${type}</div>
