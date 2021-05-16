@@ -163,12 +163,38 @@ const updateUI = ((acc) => {
   calcDispalySummary(acc);
 });
 
-let currentAccount;
+const startOutTimer = function () {
+  const tick = function () {
+    const min = String(Math.trunc(time / 60)).padStart(2, 0);
+    const sec = String(time % 60).padStart(2, 0);
+
+    labelTimer.textContent = `${min}:${sec}`;
+
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = 'Login to get started';
+      containerApp.style.opacity = 0;
+    }
+
+    // decrese 1sec
+    time--;
+  }
+
+  let time = 30;
+
+  tick();
+  const timer = setInterval(tick, 1000);
+
+  return timer;
+}
+
+let currentAccount, timer;
+
 btnLogin.addEventListener('click', function (e) {
   e.preventDefault();
   currentAccount = accounts.find(user => user.userName === inputLoginUsername.value);
 
-  if (currentAccount && currentAccount.pin === Number(inputLoginPin.value)) {
+  if (currentAccount && currentAccount.pin === +(inputLoginPin.value)) {
     labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ')[0]}`;
     containerApp.style.opacity = 1;
     const now = new Date();
@@ -187,6 +213,11 @@ btnLogin.addEventListener('click', function (e) {
 
     updateUI(currentAccount);
 
+
+    // Timer start 
+    if (timer) clearInterval(timer);
+    timer = startOutTimer();
+
   } else {
     alert('Wrong username or password!');
   }
@@ -195,7 +226,7 @@ btnLogin.addEventListener('click', function (e) {
 btnTransfer.addEventListener('click', function (e) {
   e.preventDefault();
 
-  const amount = Number(inputTransferAmount.value);
+  const amount = +(inputTransferAmount.value);
   const receiverAcc = accounts.find(acc => acc.userName === inputTransferTo.value);
   console.log(amount, receiverAcc);
 
@@ -209,6 +240,10 @@ btnTransfer.addEventListener('click', function (e) {
 
     // update UI
     updateUI(currentAccount);
+
+    // reset timer
+    clearInterval(timer);
+    timer = startOutTimer();
   }
 
   inputTransferAmount.value = inputTransferTo.value = '';
@@ -219,7 +254,7 @@ btnTransfer.addEventListener('click', function (e) {
 btnLoan.addEventListener('click', (e) => {
   e.preventDefault();
 
-  const amount = Number(inputLoanAmount.value);
+  const amount = +(inputLoanAmount.value);
 
   if (amount > 0 && currentAccount.movements.some(move => move >= amount * 0.1)) {
     // Add amount
@@ -229,6 +264,11 @@ btnLoan.addEventListener('click', (e) => {
     currentAccount.movementsDates.push(new Date().toISOString());
 
     updateUI(currentAccount);
+
+    // reset timer
+    clearInterval(timer);
+    timer = startOutTimer();
+
     inputLoanAmount.value = '';
   }
 });
@@ -245,7 +285,7 @@ btnSort.addEventListener('click', (e) => {
 btnClose.addEventListener('click', (e) => {
   e.preventDefault();
 
-  if (currentAccount.userName === inputCloseUsername.value && currentAccount.pin === Number(inputClosePin.value)) {
+  if (currentAccount.userName === inputCloseUsername.value && currentAccount.pin === +(inputClosePin.value)) {
     const index = accounts.findIndex(acc => acc.userName === currentAccount.userName);
 
     // delete account
