@@ -19,8 +19,8 @@ const account1 = {
     '2020-07-11T23:36:17.929Z',
     '2020-07-12T10:51:36.790Z',
   ],
-  currency: 'EUR',
-  locale: 'pt-PT', // de-DE
+  currency: 'USD',
+  locale: 'en-US',
 };
 
 const account2 = {
@@ -40,8 +40,8 @@ const account2 = {
     '2020-07-26T12:01:20.894Z',
     '2020-08-26T12:01:20.894Z',
   ],
-  currency: 'USD',
-  locale: 'en-US',
+  currency: 'TR',
+  locale: 'tr-Tr',
 };
 
 const account3 = {
@@ -57,8 +57,8 @@ const account3 = {
     '2020-02-25T16:33:06.386Z',
     '2020-03-10T14:43:26.374Z',
   ],
-  currency: 'USD',
-  locale: 'en-US',
+  currency: 'EUR',
+  locale: 'pt-PT',
 };
 
 const accounts = [account1, account2, account3];
@@ -102,13 +102,8 @@ const formatMovementDate = function (date) {
   if (daysPassed === 0) return 'Today';
   if (daysPassed === 1) return 'Yesterday';
   if (daysPassed <= 7) return `${daysPassed} days ago`;
-  else {
-    const day = `${date.getDate()}`.padStart(2, 0);
-    const month = `${date.getMonth()}`.padStart(2, 0);
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  }
 
+  return new Intl.DateTimeFormat(currentAccount.locale).format(date);
 }
 
 const displayMovements = function (acc, sort = false) {
@@ -170,12 +165,14 @@ btnLogin.addEventListener('click', function (e) {
     labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ')[0]}`;
     containerApp.style.opacity = 1;
     const now = new Date();
-    const day = `${now.getDate()}`.padStart(2, 0);
-    const month = `${now.getMonth()}`.padStart(2, 0);
-    const year = now.getFullYear();
-    const min = `${now.getMinutes()}`.padStart(2, 0);
-    const hour = `${now.getHours()}`.padStart(2, 0);
-    labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
+    const options = {
+      hour: 'numeric',
+      minute: 'numeric',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    }
+    labelDate.textContent = new Intl.DateTimeFormat(currentAccount.locale, options).format(now);
 
     inputLoginUsername.value = inputLoginPin.value = '';
 
