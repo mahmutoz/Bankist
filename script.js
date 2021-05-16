@@ -40,8 +40,8 @@ const account2 = {
     '2020-07-26T12:01:20.894Z',
     '2020-08-26T12:01:20.894Z',
   ],
-  currency: 'TR',
-  locale: 'tr-Tr',
+  currency: 'TRY',
+  locale: 'tr-TR',
 };
 
 const account3 = {
@@ -89,9 +89,16 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+const formatCur = function (value, locale, currency) {
+  return new Intl.NumberFormat(locale, {
+    currency: currency,
+    style: 'currency'
+  }).format(value);
+}
+
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, move) => acc + move, 0);
-  labelBalance.textContent = `${acc.balance} €`;
+  labelBalance.textContent = formatCur(acc.balance, acc.locale, acc.currency);
 }
 
 // Date Format
@@ -119,7 +126,7 @@ const displayMovements = function (acc, sort = false) {
     <div class="movements__row">
       <div class="movements__type movements__type--${type}">${i + 1}. ${type}</div>
       <div class="movements__date">${displayDate}</div>
-      <div class="movements__value">${move}€</div>
+      <div class="movements__value">${formatCur(move,acc.locale,acc.currency)}</div>
     </div>
     `;
     containerMovements.insertAdjacentHTML('afterbegin', html);
@@ -129,13 +136,13 @@ const displayMovements = function (acc, sort = false) {
 const calcDispalySummary = function (acc) {
 
   const outComes = acc.movements.filter(move => move < 0).reduce((acc, move) => acc + move, 0);
-  labelSumOut.textContent = `${Math.abs((outComes).toFixed(2))}€`;
+  labelSumOut.textContent = `${formatCur(Math.abs((outComes).toFixed(2)),acc.locale,acc.currency)}`;
 
   const inComes = acc.movements.filter(move => move > 0).reduce((acc, move) => acc + move, 0);
-  labelSumIn.textContent = `${(inComes.toFixed(2))}€`;
+  labelSumIn.textContent = `${formatCur((inComes.toFixed(2)),acc.locale,acc.currency)}`;
 
   const interest = acc.movements.filter(move => move > 0).map(deposit => (deposit * acc.interestRate) / 100).filter((int, i, arr) => int >= 1).reduce((acc, move) => acc + move, 0);
-  labelSumInterest.textContent = `${(interest).toFixed(2)}€`;
+  labelSumInterest.textContent = `${formatCur(((interest).toFixed(2)),acc.locale,acc.currency)}`;
 }
 
 const creatUserNames = function (accs) {
